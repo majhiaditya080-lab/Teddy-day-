@@ -1,5 +1,5 @@
 # Teddy-day-
-<!DOCTYPE HAPPY-TEDDY-DAY-JANN>
+<!DOCTYPE Janki happiness>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -17,19 +17,23 @@
         .active { display: flex; }
 
         /* Game Elements */
-        #game-area { width: 90%; max-width: 400px; height: 50vh; background: #111; border: 4px solid #333; position: relative; overflow: hidden; border-radius: 15px; }
-        #claw-line { position: absolute; top: 0; width: 2px; background: #eee; height: 0; z-index: 5; }
-        #claw { position: absolute; top: 0; width: 50px; height: 40px; background: #555; border-radius: 0 0 10px 10px; display: flex; justify-content: center; align-items: center; z-index: 10; font-weight: bold; color: white; border: 1px solid #777; transition: top 0.7s ease-in; }
-        .item { position: absolute; font-size: 30px; z-index: 8; transition: top 0.7s ease-in; }
+        #game-area { width: 95%; max-width: 400px; height: 60vh; background: #111; border: 4px solid #333; position: relative; overflow: hidden; border-radius: 15px; background-image: radial-gradient(#222 1px, transparent 1px); background-size: 20px 20px; }
+        #basket { position: absolute; bottom: 10px; width: 80px; height: 60px; background: #4a2c2c; border-radius: 0 0 20px 20px; display: flex; justify-content: center; align-items: center; z-index: 10; border: 3px solid #633; font-size: 30px; }
+        #basket::before { content: ''; position: absolute; top: -10px; width: 90px; height: 15px; background: #633; border-radius: 10px; }
+        
+        .falling-item { position: absolute; font-size: 35px; z-index: 8; will-change: transform; }
+        
+        /* Floating Pop-up Text */
+        .popup-text { position: absolute; font-weight: bold; color: var(--pink); font-size: 0.9rem; animation: floatUp 1s forwards; pointer-events: none; z-index: 15; text-shadow: 1px 1px 2px black; }
+        @keyframes floatUp { from { transform: translateY(0); opacity: 1; } to { transform: translateY(-50px); opacity: 0; } }
 
         /* Buttons */
-        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 90%; max-width: 400px; margin-top: 20px; }
-        .btn { background: #333; color: white; border: 2px solid #555; padding: 20px; font-size: 1.5rem; border-radius: 10px; text-align: center; }
-        .btn-grab { grid-column: span 2; background: var(--pink); border: none; font-weight: bold; }
-        .btn:active { background: #555; transform: scale(0.95); }
+        .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; width: 90%; max-width: 400px; margin-top: 20px; }
+        .btn { background: #333; color: white; border: 2px solid #555; padding: 25px; font-size: 2rem; border-radius: 15px; text-align: center; }
+        .btn:active { background: var(--pink); transform: scale(0.95); }
 
         #score-tag { font-size: 1.5rem; color: var(--pink); margin-bottom: 10px; font-weight: bold; }
-        #timer-box { font-size: 3rem; color: var(--pink); text-align: center; }
+        #timer-box { font-size: 3.5rem; color: var(--pink); text-align: center; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -38,8 +42,172 @@
 
     <section id="challenge" class="screen">
         <h2 class="glitch">ARE YOU READY MY LADY?</h2>
-        <button class="btn btn-grab" onclick="showScreen('instructions')">I AM READY</button>
+        <button class="btn" style="background: var(--pink); width: 100%;" onclick="showScreen('instructions')">I AM READY</button>
     </section>
+
+    <section id="instructions" class="screen">
+        <h2 style="color:var(--pink)">MISSION: CATCHER</h2>
+        <p style="text-align: center;">Move the basket with ⬅️ ➡️<br>Catch items for points!<br>Avoid 💣 (-500)<br>Target: 2500 Points</p>
+        <button class="btn" style="background: var(--pink); width: 100%;" onclick="startGame()">START GAME</button>
+    </section>
+
+    <section id="game-screen" class="screen">
+        <div id="score-tag">SCORE: <span id="score">0</span> / 2500</div>
+        <div id="game-area">
+            <div id="basket">🧺</div>
+        </div>
+        <div class="controls">
+            <div class="btn" id="leftBtn">⬅️</div>
+            <div class="btn" id="rightBtn">➡️</div>
+        </div>
+    </section>
+
+    <section id="slideshow" class="screen"><div id="quote-box" style="text-align:center"></div></section>
+
+    <section id="final" class="screen">
+        <h1 class="glitch">COMING SOON</h1>
+        <div id="timer-box">00:00:00</div>
+        <p>Until Promise Day</p>
+    </section>
+
+    <script>
+        let score = 0, basketX = 150, isMoving = 0;
+        const days = ["7th Feb: Rose Day", "8th Feb: Propose Day", "9th Feb: Chocolate Day", "10th Feb: TEDDY DAY"];
+        
+        // Sequence logic
+        let dIdx = 0;
+        const introTimer = setInterval(() => {
+            dIdx++;
+            if(dIdx < 4) document.getElementById('day-text').innerText = days[dIdx];
+            else { clearInterval(introTimer); showScreen('challenge'); }
+        }, 3900);
+
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        const itemsData = [
+            { e: '✨', p: 250, msg: "You're pure gold!" },
+            { e: '🐶', p: 200, msg: "Aditya's pet loves you!" },
+            { e: '🧸', p: 100, msg: "A warm hug for you!" },
+            { e: '👩‍❤️‍👨', p: 300, msg: "Bubu & Dudu Forever!" },
+            { e: '💣', p: -500, msg: "Ouch! Stay safe!" }
+        ];
+
+        function startGame() {
+            showScreen('game-screen');
+            setInterval(spawnFallingItem, 800);
+            requestAnimationFrame(gameLoop);
+        }
+
+        // Basket Movement
+        const lBtn = document.getElementById('leftBtn');
+        const rBtn = document.getElementById('rightBtn');
+        lBtn.onpointerdown = () => isMoving = -7;
+        rBtn.onpointerdown = () => isMoving = 7;
+        lBtn.onpointerup = lBtn.onpointerleave = rBtn.onpointerup = rBtn.onpointerleave = () => isMoving = 0;
+
+        function gameLoop() {
+            const area = document.getElementById('game-area');
+            const basket = document.getElementById('basket');
+            if (isMoving !== 0) {
+                basketX += isMoving;
+                if(basketX < 0) basketX = 0;
+                if(basketX > area.offsetWidth - 80) basketX = area.offsetWidth - 80;
+                basket.style.left = basketX + 'px';
+            }
+            
+            // Move items and check collision
+            document.querySelectorAll('.falling-item').forEach(item => {
+                let top = parseFloat(item.style.top) || 0;
+                top += 4; // Falling speed
+                item.style.top = top + 'px';
+
+                // Collision Check
+                const bRect = basket.getBoundingClientRect();
+                const iRect = item.getBoundingClientRect();
+
+                if (iRect.bottom >= bRect.top && iRect.left < bRect.right && iRect.right > bRect.left && iRect.top < bRect.bottom) {
+                    collect(item);
+                } else if (top > area.offsetHeight) {
+                    item.remove();
+                }
+            });
+
+            if(score < 2500) requestAnimationFrame(gameLoop);
+            else startFinalPhase();
+        }
+
+        function spawnFallingItem() {
+            const area = document.getElementById('game-area');
+            const data = itemsData[Math.floor(Math.random() * itemsData.length)];
+            const item = document.createElement('div');
+            item.className = 'falling-item';
+            item.innerHTML = data.e;
+            item.dataset.p = data.p;
+            item.dataset.msg = data.msg;
+            item.style.left = Math.random() * (area.offsetWidth - 40) + 'px';
+            item.style.top = '-50px';
+            area.appendChild(item);
+        }
+
+        function collect(item) {
+            score += parseInt(item.dataset.p);
+            document.getElementById('score').innerText = Math.max(0, score);
+            
+            // Create pop-up text
+            const popup = document.createElement('div');
+            popup.className = 'popup-text';
+            popup.innerText = item.dataset.msg;
+            popup.style.left = item.style.left;
+            popup.style.top = '70%';
+            document.getElementById('game-area').appendChild(popup);
+            setTimeout(() => popup.remove(), 1000);
+
+            item.remove();
+        }
+
+        function startFinalPhase() {
+            showScreen('slideshow');
+            const quotes = [
+                "You're the softest part of my world. 🧸",
+                "Warm hugs for my favorite person.",
+                "Aditya & Janki: A perfect match.",
+                "To the cutest girl ever, Happy Teddy Day!",
+                "May your day be as fluffy as a teddy.",
+                "Sending you a million virtual hugs.",
+                "You're my permanent cuddle partner.",
+                "Keep smiling, it suits you best!",
+                "My heart beats for you only.",
+                "Wait for the next big surprise..."
+            ];
+            let qIdx = 0;
+            const qBox = document.getElementById('quote-box');
+            const qInt = setInterval(() => {
+                if(qIdx < quotes.length) { 
+                    qBox.innerHTML = `<h2 class="glitch" style="font-size:1.5rem">${quotes[qIdx]}</h2>`; 
+                    qIdx++; 
+                } else { 
+                    clearInterval(qInt); 
+                    showScreen('final'); 
+                    updateCountdown();
+                }
+            }, 3000);
+        }
+
+        function updateCountdown() {
+            const target = new Date("Feb 11, 2026 00:00:00").getTime();
+            setInterval(() => {
+                const diff = target - new Date().getTime();
+                const h = Math.floor(diff / 36e5), m = Math.floor((diff % 36e5)/6e4), s = Math.floor((diff % 6e4)/1000);
+                document.getElementById('timer-box').innerText = `${h}h ${m}m ${s}s`;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
+
 
     <section id="instructions" class="screen">
         <h2 style="color:var(--pink)">MISSION RULES</h2>
