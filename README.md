@@ -1,27 +1,3 @@
-# Teddy-day-
-<!DOCTYPE Janki happiness>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Teddy Challenge</title>
-    <style>
-        :root { --pink: #ff4d6d; --dark: #0a0a0a; }
-        * { box-sizing: border-box; touch-action: none; -webkit-tap-highlight-color: transparent; }
-        body, html { margin: 0; padding: 0; background: var(--dark); color: white; font-family: sans-serif; overflow: hidden; height: 100%; width: 100%; }
-
-        .glitch { font-size: 2rem; font-weight: bold; text-align: center; text-transform: uppercase; color: white; text-shadow: 2px 2px #ff4d6d, -2px -2px #00fffc; animation: shake 0.5s infinite; }
-        @keyframes shake { 0% { transform: translate(0); } 20% { transform: translate(-2px, 2px); } 40% { transform: translate(-2px, -2px); } 60% { transform: translate(2px, 2px); } 80% { transform: translate(2px, -2px); } 100% { transform: translate(0); } }
-
-        .screen { display: none; height: 100vh; width: 100vw; flex-direction: column; align-items: center; justify-content: center; position: absolute; padding: 20px; }
-        .active { display: flex; }
-
-        /* Game Elements */
-        #game-area { width: 95%; max-width: 400px; height: 60vh; background: #111; border: 4px solid #333; position: relative; overflow: hidden; border-radius: 15px; background-image: radial-gradient(#222 1px, transparent 1px); background-size: 20px 20px; }
-        #basket { position: absolute; bottom: 10px; width: 80px; height: 60px; background: #4a2c2c; border-radius: 0 0 20px 20px; display: flex; justify-content: center; align-items: center; z-index: 10; border: 3px solid #633; font-size: 30px; }
-        #basket::before { content: ''; position: absolute; top: -10px; width: 90px; height: 15px; background: #633; border-radius: 10px; }
-        
-        .falling-item { position: absolute; font-size: 35px; z-index: 8; will-change: transform; }
         
         /* Floating Pop-up Text */
         .popup-text { position: absolute; font-weight: bold; color: var(--pink); font-size: 0.9rem; animation: floatUp 1s forwards; pointer-events: none; z-index: 15; text-shadow: 1px 1px 2px black; }
